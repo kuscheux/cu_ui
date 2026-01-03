@@ -205,10 +205,12 @@ class _CuSelectState<T> extends State<CuSelect<T>> with CuComponentMixin {
                     AnimatedRotation(
                       duration: animation.fast,
                       turns: _isOpen ? 0.5 : 0,
-                      child: Icon(
-                        Icons.keyboard_arrow_down,
-                        size: 20,
-                        color: colors.accents5,
+                      child: Text(
+                        '\u{25BC}',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: colors.accents5,
+                        ),
                       ),
                     ),
                   ],
@@ -296,10 +298,12 @@ class _SelectDropdownState<T> extends State<_SelectDropdown<T>> with CuComponent
                             ),
                           ),
                           if (isSelected)
-                            Icon(
-                              Icons.check,
-                              size: 16,
-                              color: colors.foreground,
+                            Text(
+                              '\u{2713}',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: colors.foreground,
+                              ),
                             ),
                         ],
                       ),

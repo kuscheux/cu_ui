@@ -81,9 +81,8 @@ class _CuCardState extends State<CuCard> with CuComponentMixin {
                   padding: widget.padding ?? EdgeInsets.all(spacing.space4),
                   child: widget.header,
                 ),
-                Divider(
-                  height: 1,
-                  thickness: borders.width,
+                Container(
+                  height: borders.width,
                   color: _borderColor,
                 ),
               ],
@@ -92,9 +91,8 @@ class _CuCardState extends State<CuCard> with CuComponentMixin {
                 child: widget.child,
               ),
               if (widget.footer != null) ...[
-                Divider(
-                  height: 1,
-                  thickness: borders.width,
+                Container(
+                  height: borders.width,
                   color: _borderColor,
                 ),
                 Container(

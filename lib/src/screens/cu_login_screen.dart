@@ -231,7 +231,7 @@ class _CuLoginScreenState extends State<CuLoginScreen> with CuComponentMixin {
 
                   // Login button
                   CuButton(
-                    widget.loginButtonText,
+                    child: Text(widget.loginButtonText),
                     onPressed: _handleLogin,
                     loading: _isLoading,
                     disabled: _isLoading,

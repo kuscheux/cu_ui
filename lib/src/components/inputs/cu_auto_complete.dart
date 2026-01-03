@@ -286,10 +286,12 @@ class _CuAutoCompleteState extends State<CuAutoComplete> with CuComponentMixin {
                     padding: EdgeInsets.only(right: spacing.space3),
                     child: GestureDetector(
                       onTap: _clear,
-                      child: Icon(
-                        Icons.close,
-                        size: 16,
-                        color: colors.accents5,
+                      child: Text(
+                        '\u{2715}',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: colors.accents5,
+                        ),
                       ),
                     ),
                   ),

@@ -370,7 +370,7 @@ Widget _avatarShowcase(Map<String, dynamic> props) {
   return Center(
     child: CuAvatar(
       text: props['text'] as String? ?? 'JD',
-      size: (props['size'] as num?)?.toDouble() ?? 40.0,
+      customSize: (props['size'] as num?)?.toDouble() ?? 40.0,
       isSquare: props['isSquare'] as bool? ?? false,
     ),
   );

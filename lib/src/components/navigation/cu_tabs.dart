@@ -127,14 +127,16 @@ class _CuTabsState extends State<CuTabs> with CuComponentMixin {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         if (tab.icon != null) ...[
-                          Icon(
-                            tab.icon,
-                            size: 16,
-                            color: tab.disabled
-                                ? colors.accents4
-                                : isActive
-                                    ? colors.foreground
-                                    : colors.accents5,
+                          DefaultTextStyle(
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: tab.disabled
+                                  ? colors.accents4
+                                  : isActive
+                                      ? colors.foreground
+                                      : colors.accents5,
+                            ),
+                            child: tab.icon!,
                           ),
                           SizedBox(width: spacing.space2),
                         ],
@@ -184,8 +186,8 @@ class CuTab {
   /// Display label
   final String label;
 
-  /// Optional icon
-  final IconData? icon;
+  /// Optional icon widget
+  final Widget? icon;
 
   /// Tab content
   final Widget? child;
@@ -206,7 +208,7 @@ class CuTab {
 class CuTabItem extends StatelessWidget {
   final String value;
   final String label;
-  final IconData? icon;
+  final Widget? icon;
   final Widget? child;
   final bool disabled;
 

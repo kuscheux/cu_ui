@@ -43,7 +43,7 @@ class _CuUserState extends State<CuUser> with CuComponentMixin {
         CuAvatar(
           src: widget.src,
           text: widget.text ?? widget.name,
-          size: 32,
+          customSize: 32,
         ),
         SizedBox(width: spacing.space3),
         Column(

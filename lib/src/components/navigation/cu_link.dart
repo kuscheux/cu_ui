@@ -93,10 +93,12 @@ class _CuLinkState extends State<CuLink> with CuComponentMixin {
         children: [
           content,
           SizedBox(width: spacing.space1),
-          Icon(
-            Icons.open_in_new,
-            size: 14,
-            color: linkColor,
+          Text(
+            '\u{2197}',
+            style: TextStyle(
+              fontSize: 12,
+              color: linkColor,
+            ),
           ),
         ],
       );

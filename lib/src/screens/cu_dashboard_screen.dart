@@ -319,7 +319,7 @@ class _CuDashboardScreenState extends State<CuDashboardScreen> with CuComponentM
               _formatCurrency(account.balance),
               style: typography.body.copyWith(
                 color: colors.foreground,
-                fontWeight: typography.weightSemiBold,
+                fontWeight: typography.weightSemibold,
               ),
             ),
           ],

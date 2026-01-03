@@ -281,7 +281,7 @@ class _CuTransferScreenState extends State<CuTransferScreen> with CuComponentMix
             value: a.id,
             label: '${a.name} - ${_formatCurrency(a.balance)}',
           )).toList(),
-          onChanged: (value) => setState(() => _fromAccountId = value),
+          onChange: (value) => setState(() => _fromAccountId = value),
           placeholder: 'Select account',
         ),
         CuSpacer.vertical(spacing.space4),
@@ -300,7 +300,7 @@ class _CuTransferScreenState extends State<CuTransferScreen> with CuComponentMix
                 value: a.id,
                 label: '${a.name} - ${_formatCurrency(a.balance)}',
               )).toList(),
-          onChanged: (value) => setState(() => _toAccountId = value),
+          onChange: (value) => setState(() => _toAccountId = value),
           placeholder: 'Select account',
         ),
         CuSpacer.vertical(spacing.space4),
@@ -338,7 +338,7 @@ class _CuTransferScreenState extends State<CuTransferScreen> with CuComponentMix
 
         // Continue button
         CuButton(
-          'Continue',
+          child: const Text('Continue'),
           onPressed: _handleContinue,
           disabled: !_isValid,
         ),
@@ -397,7 +397,7 @@ class _CuTransferScreenState extends State<CuTransferScreen> with CuComponentMix
 
         // Confirm button
         CuButton(
-          'Confirm Transfer',
+          child: const Text('Confirm Transfer'),
           onPressed: _handleTransfer,
           loading: _isLoading,
           disabled: _isLoading,
@@ -406,7 +406,7 @@ class _CuTransferScreenState extends State<CuTransferScreen> with CuComponentMix
 
         // Cancel button
         CuButton.secondary(
-          'Cancel',
+          child: const Text('Cancel'),
           onPressed: () => setState(() => _showConfirmation = false),
           disabled: _isLoading,
         ),

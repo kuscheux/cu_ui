@@ -185,7 +185,10 @@ class _CuButtonGroupItemState extends State<_CuButtonGroupItem>
               else if (button.icon != null)
                 Padding(
                   padding: EdgeInsets.only(right: spacing.space2),
-                  child: Icon(button.icon, size: _iconSize, color: _textColor),
+                  child: DefaultTextStyle(
+                    style: TextStyle(fontSize: _iconSize, color: _textColor),
+                    child: button.icon!,
+                  ),
                 ),
               DefaultTextStyle(
                 style: _textStyle,
@@ -194,8 +197,10 @@ class _CuButtonGroupItemState extends State<_CuButtonGroupItem>
               if (button.iconRight != null)
                 Padding(
                   padding: EdgeInsets.only(left: spacing.space2),
-                  child:
-                      Icon(button.iconRight, size: _iconSize, color: _textColor),
+                  child: DefaultTextStyle(
+                    style: TextStyle(fontSize: _iconSize, color: _textColor),
+                    child: button.iconRight!,
+                  ),
                 ),
             ],
           ),

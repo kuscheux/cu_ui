@@ -92,10 +92,13 @@ class _CuCheckboxState extends State<CuCheckbox> with CuComponentMixin {
 
     if (widget.value) {
       return Center(
-        child: Icon(
-          Icons.check,
-          size: _checkboxSize * 0.75,
-          color: colors.background,
+        child: Text(
+          '\u{2713}',
+          style: TextStyle(
+            fontSize: _checkboxSize * 0.7,
+            color: colors.background,
+            height: 1.0,
+          ),
         ),
       );
     }

@@ -3,6 +3,7 @@ import 'package:flutter/painting.dart';
 import '../../theme/cu_theme.dart';
 import '../_base/cu_component.dart';
 import '../feedback/cu_spinner.dart';
+import '../feedback/cu_splash.dart';
 
 /// Button type variants
 enum CuButtonType {
@@ -30,8 +31,8 @@ class CuButton extends StatefulWidget {
   final bool auto; // Auto-width
   final bool ghost; // Transparent background
   final bool shadow; // Show shadow
-  final IconData? icon;
-  final IconData? iconRight;
+  final Widget? icon;
+  final Widget? iconRight;
 
   const CuButton({
     super.key,
@@ -56,8 +57,8 @@ class CuButton extends StatefulWidget {
     CuSize size = CuSize.medium,
     bool loading = false,
     bool disabled = false,
-    IconData? icon,
-    IconData? iconRight,
+    Widget? icon,
+    Widget? iconRight,
   }) {
     return CuButton(
       key: key,
@@ -80,8 +81,8 @@ class CuButton extends StatefulWidget {
     CuSize size = CuSize.medium,
     bool loading = false,
     bool disabled = false,
-    IconData? icon,
-    IconData? iconRight,
+    Widget? icon,
+    Widget? iconRight,
   }) {
     return CuButton(
       key: key,
@@ -173,58 +174,71 @@ class _CuButtonState extends State<CuButton> with CuComponentMixin {
       onExit: (_) => setState(() => _isHovered = false),
       cursor:
           _isDisabled ? SystemMouseCursors.forbidden : SystemMouseCursors.click,
-      child: GestureDetector(
-        onTapDown: (_) => setState(() => _isPressed = true),
-        onTapUp: (_) => setState(() => _isPressed = false),
-        onTapCancel: () => setState(() => _isPressed = false),
-        onTap: _isDisabled ? null : widget.onPressed,
-        child: AnimatedContainer(
-          duration: animation.normal,
-          curve: animation.ease,
-          padding: _padding,
-          constraints: widget.auto
-              ? null
-              : BoxConstraints(
-                  minWidth: widget.size.resolve(
-                    small: 80.0,
-                    medium: 100.0,
-                    large: 120.0,
-                  ),
+      child: AnimatedContainer(
+        duration: animation.normal,
+        curve: animation.ease,
+        constraints: widget.auto
+            ? null
+            : BoxConstraints(
+                minWidth: widget.size.resolve(
+                  small: 80.0,
+                  medium: 100.0,
+                  large: 120.0,
                 ),
-          decoration: BoxDecoration(
-            color: _backgroundColor,
-            border: Border.all(
-              color: _borderColor,
-              width: borders.width,
-            ),
-            borderRadius: radius.mdBorder,
-            boxShadow: widget.shadow && !_isDisabled ? shadows.smallList : null,
-          ),
-          child: Row(
-            mainAxisSize: widget.auto ? MainAxisSize.min : MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (widget.loading)
-                Padding(
-                  padding: EdgeInsets.only(right: spacing.space2),
-                  child: CuSpinner(size: _iconSize, color: _textColor),
-                )
-              else if (widget.icon != null)
-                Padding(
-                  padding: EdgeInsets.only(right: spacing.space2),
-                  child: Icon(widget.icon, size: _iconSize, color: _textColor),
-                ),
-              DefaultTextStyle(
-                style: _textStyle,
-                child: widget.child,
               ),
-              if (widget.iconRight != null)
-                Padding(
-                  padding: EdgeInsets.only(left: spacing.space2),
-                  child:
-                      Icon(widget.iconRight, size: _iconSize, color: _textColor),
-                ),
-            ],
+        decoration: BoxDecoration(
+          color: _backgroundColor,
+          border: Border.all(
+            color: _borderColor,
+            width: borders.width,
+          ),
+          borderRadius: radius.mdBorder,
+          boxShadow: widget.shadow && !_isDisabled ? shadows.smallList : null,
+        ),
+        child: CuSplash(
+          onTap: _isDisabled ? null : widget.onPressed,
+          disabled: _isDisabled,
+          borderRadius: radius.mdBorder,
+          splashColor: _textColor.withValues(alpha: 0.1),
+          hoverColor: const Color(0x00000000),
+          showHover: false,
+          child: Padding(
+            padding: _padding,
+            child: Center(
+              child: Row(
+                mainAxisSize: widget.auto ? MainAxisSize.min : MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  if (widget.loading)
+                    Padding(
+                      padding: EdgeInsets.only(right: spacing.space2),
+                      child: CuSpinner(size: _iconSize, color: _textColor),
+                    )
+                  else if (widget.icon != null)
+                    Padding(
+                      padding: EdgeInsets.only(right: spacing.space2),
+                      child: DefaultTextStyle(
+                        style: TextStyle(fontSize: _iconSize, color: _textColor),
+                        child: widget.icon!,
+                      ),
+                    ),
+                  DefaultTextStyle(
+                    style: _textStyle,
+                    textAlign: TextAlign.center,
+                    child: widget.child,
+                  ),
+                  if (widget.iconRight != null)
+                    Padding(
+                      padding: EdgeInsets.only(left: spacing.space2),
+                      child: DefaultTextStyle(
+                        style: TextStyle(fontSize: _iconSize, color: _textColor),
+                        child: widget.iconRight!,
+                      ),
+                    ),
+                ],
+              ),
+            ),
           ),
         ),
       ),

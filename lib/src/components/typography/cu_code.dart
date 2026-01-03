@@ -63,10 +63,12 @@ class _CuCodeState extends State<CuCode> with CuComponentMixin {
                   onTap: _copyToClipboard,
                   child: Container(
                     padding: EdgeInsets.all(spacing.space2),
-                    child: Icon(
-                      _copied ? Icons.check : Icons.copy,
-                      size: 16,
-                      color: _copied ? colors.success.base : colors.accents5,
+                    child: Text(
+                      _copied ? '\u{2713}' : '\u{2398}',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: _copied ? colors.success.base : colors.accents5,
+                      ),
                     ),
                   ),
                 ),
@@ -214,10 +216,12 @@ class _CuSnippetState extends State<CuSnippet> with CuComponentMixin {
             SizedBox(width: spacing.space2),
             GestureDetector(
               onTap: _copyToClipboard,
-              child: Icon(
-                _copied ? Icons.check : Icons.copy,
-                size: 16,
-                color: _copied ? colors.success.base : colors.accents5,
+              child: Text(
+                _copied ? '\u{2713}' : '\u{2398}',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: _copied ? colors.success.base : colors.accents5,
+                ),
               ),
             ),
           ],

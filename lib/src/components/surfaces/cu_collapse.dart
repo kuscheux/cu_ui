@@ -140,9 +140,12 @@ class _CuCollapseState extends State<CuCollapse>
                     ),
                     RotationTransition(
                       turns: _rotateAnimation,
-                      child: Icon(
-                        Icons.keyboard_arrow_down,
-                        color: colors.accents5,
+                      child: Text(
+                        '\u{25BC}',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: colors.accents5,
+                        ),
                       ),
                     ),
                   ],
@@ -336,9 +339,12 @@ class _CollapseGroupItemState extends State<_CollapseGroupItem>
                   ),
                   RotationTransition(
                     turns: _rotateAnimation,
-                    child: Icon(
-                      Icons.keyboard_arrow_down,
-                      color: colors.accents5,
+                    child: Text(
+                      '\u{25BC}',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: colors.accents5,
+                      ),
                     ),
                   ),
                 ],

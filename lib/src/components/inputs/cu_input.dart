@@ -20,8 +20,8 @@ class CuInput extends StatefulWidget {
   final bool password;
   final CuSize size;
   final CuVariant type;
-  final IconData? icon;
-  final IconData? iconRight;
+  final Widget? icon;
+  final Widget? iconRight;
   final Widget? prefix;
   final Widget? suffix;
   final int? maxLength;
@@ -67,9 +67,11 @@ class CuInput extends StatefulWidget {
   State<CuInput> createState() => _CuInputState();
 }
 
-class _CuInputState extends State<CuInput> with CuComponentMixin {
+class _CuInputState extends State<CuInput> with CuComponentMixin, SingleTickerProviderStateMixin {
   late TextEditingController _controller;
   late FocusNode _focusNode;
+  late AnimationController _animationController;
+  late Animation<double> _focusAnimation;
   bool _isFocused = false;
   bool _isHovered = false;
   bool _obscureText = true;
@@ -81,10 +83,21 @@ class _CuInputState extends State<CuInput> with CuComponentMixin {
     _focusNode = widget.focusNode ?? FocusNode();
     _focusNode.addListener(_onFocusChange);
     _controller.addListener(_onTextChange);
+
+    // Animation controller for focus state
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 200),
+      vsync: this,
+    );
+    _focusAnimation = CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeOut,
+    );
   }
 
   @override
   void dispose() {
+    _animationController.dispose();
     _controller.removeListener(_onTextChange);
     if (widget.controller == null) _controller.dispose();
     if (widget.focusNode == null) {
@@ -96,6 +109,11 @@ class _CuInputState extends State<CuInput> with CuComponentMixin {
 
   void _onFocusChange() {
     setState(() => _isFocused = _focusNode.hasFocus);
+    if (_isFocused) {
+      _animationController.forward();
+    } else {
+      _animationController.reverse();
+    }
   }
 
   void _onTextChange() {
@@ -151,16 +169,35 @@ class _CuInputState extends State<CuInput> with CuComponentMixin {
           onExit: (_) => setState(() => _isHovered = false),
           child: GestureDetector(
             onTap: widget.disabled ? null : () => _focusNode.requestFocus(),
-            child: AnimatedContainer(
-              duration: animation.normal,
-              decoration: BoxDecoration(
-                color: widget.disabled ? colors.accents1 : colors.background,
-                border: Border.all(
-                  color: _borderColor(hasError),
-                  width: borders.width,
-                ),
-                borderRadius: radius.mdBorder,
-              ),
+            child: AnimatedBuilder(
+              animation: _focusAnimation,
+              builder: (context, child) {
+                final borderWidth = Tween<double>(
+                  begin: borders.width,
+                  end: borders.width * 1.5,
+                ).evaluate(_focusAnimation);
+
+                return Container(
+                  decoration: BoxDecoration(
+                    color: widget.disabled ? colors.accents1 : colors.background,
+                    border: Border.all(
+                      color: _borderColor(hasError),
+                      width: borderWidth,
+                    ),
+                    borderRadius: radius.mdBorder,
+                    boxShadow: _isFocused && !hasError
+                        ? [
+                            BoxShadow(
+                              color: colors.foreground.withValues(alpha: 0.1 * _focusAnimation.value),
+                              blurRadius: 4 * _focusAnimation.value,
+                              spreadRadius: 0,
+                            ),
+                          ]
+                        : null,
+                  ),
+                  child: child,
+                );
+              },
               child: Row(
                 children: [
                   // Prefix / Icon
@@ -172,10 +209,9 @@ class _CuInputState extends State<CuInput> with CuComponentMixin {
                   else if (widget.icon != null)
                     Padding(
                       padding: EdgeInsets.only(left: spacing.space3),
-                      child: _CuIcon(
-                        icon: widget.icon!,
-                        size: _iconSize,
-                        color: colors.accents4,
+                      child: DefaultTextStyle(
+                        style: TextStyle(fontSize: _iconSize, color: colors.accents4),
+                        child: widget.icon!,
                       ),
                     ),
 
@@ -211,10 +247,9 @@ class _CuInputState extends State<CuInput> with CuComponentMixin {
                       onTap: _onClear,
                       child: Padding(
                         padding: EdgeInsets.only(right: spacing.space2),
-                        child: _CuIcon(
-                          icon: _CuIcons.close,
-                          size: _iconSize,
-                          color: colors.accents4,
+                        child: Text(
+                          '\u{2715}',
+                          style: TextStyle(fontSize: _iconSize, color: colors.accents4),
                         ),
                       ),
                     ),
@@ -225,10 +260,9 @@ class _CuInputState extends State<CuInput> with CuComponentMixin {
                       onTap: () => setState(() => _obscureText = !_obscureText),
                       child: Padding(
                         padding: EdgeInsets.only(right: spacing.space3),
-                        child: _CuIcon(
-                          icon: _obscureText ? _CuIcons.visibilityOff : _CuIcons.visibility,
-                          size: _iconSize,
-                          color: colors.accents4,
+                        child: Text(
+                          _obscureText ? '\u{25CF}' : '\u{25CB}',
+                          style: TextStyle(fontSize: _iconSize, color: colors.accents4),
                         ),
                       ),
                     ),
@@ -242,10 +276,9 @@ class _CuInputState extends State<CuInput> with CuComponentMixin {
                   else if (widget.iconRight != null && !widget.password && !widget.clearable)
                     Padding(
                       padding: EdgeInsets.only(right: spacing.space3),
-                      child: _CuIcon(
-                        icon: widget.iconRight!,
-                        size: _iconSize,
-                        color: colors.accents4,
+                      child: DefaultTextStyle(
+                        style: TextStyle(fontSize: _iconSize, color: colors.accents4),
+                        child: widget.iconRight!,
                       ),
                     ),
                 ],
@@ -371,44 +404,3 @@ class _CuInputState extends State<CuInput> with CuComponentMixin {
       );
 }
 
-/// Custom icon widget using only widgets.dart primitives
-/// Replaces Material Icon widget
-class _CuIcon extends StatelessWidget {
-  final IconData icon;
-  final double size;
-  final Color color;
-
-  const _CuIcon({
-    required this.icon,
-    required this.size,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: size,
-      height: size,
-      child: Center(
-        child: Text(
-          String.fromCharCode(icon.codePoint),
-          style: TextStyle(
-            inherit: false,
-            fontFamily: icon.fontFamily,
-            package: icon.fontPackage,
-            fontSize: size,
-            color: color,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Icon constants using Material Icons font (which is bundled with Flutter)
-/// These are the same codepoints as Material Icons
-class _CuIcons {
-  static const IconData close = IconData(0xe5cd, fontFamily: 'MaterialIcons');
-  static const IconData visibility = IconData(0xe8f4, fontFamily: 'MaterialIcons');
-  static const IconData visibilityOff = IconData(0xe8f5, fontFamily: 'MaterialIcons');
-}

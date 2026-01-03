@@ -39,6 +39,16 @@ class CuSpacer extends StatefulWidget {
     return CuSpacer(height: multiplier);
   }
 
+  /// Create a horizontal spacer with explicit pixel width
+  factory CuSpacer.horizontal(double width) {
+    return CuSpacer(inline: true, w: width);
+  }
+
+  /// Create a vertical spacer with explicit pixel height
+  factory CuSpacer.vertical(double height) {
+    return CuSpacer(h: height);
+  }
+
   @override
   State<CuSpacer> createState() => _CuSpacerState();
 }

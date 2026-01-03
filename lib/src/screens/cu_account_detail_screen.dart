@@ -458,7 +458,7 @@ class _CuAccountDetailScreenState extends State<CuAccountDetailScreen> with CuCo
                     '${isCredit ? '+' : ''}${_formatCurrency(txn.amount)}',
                     style: typography.body.copyWith(
                       color: isCredit ? colors.success.base : colors.foreground,
-                      fontWeight: typography.weightSemiBold,
+                      fontWeight: typography.weightSemibold,
                     ),
                   ),
                   if (txn.status != null && txn.status != 'completed')

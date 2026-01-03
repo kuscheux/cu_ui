@@ -79,6 +79,7 @@ export 'src/components/feedback/cu_spinner.dart';
 export 'src/components/feedback/cu_progress.dart';
 export 'src/components/feedback/cu_note.dart';
 export 'src/components/feedback/cu_toast.dart';
+export 'src/components/feedback/cu_splash.dart';
 
 // Animations
 export 'src/animations/core/animation_constants.dart';

@@ -128,10 +128,12 @@ class _CuPaginationState extends State<CuPagination> with CuComponentMixin {
         _PaginationButton(
           onTap: _currentPage > 1 ? () => _setPage(_currentPage - 1) : null,
           size: itemSize,
-          child: Icon(
-            Icons.chevron_left,
-            size: fontSize + 4,
-            color: _currentPage > 1 ? colors.foreground : colors.accents4,
+          child: Text(
+            '\u{2039}',
+            style: TextStyle(
+              fontSize: fontSize + 4,
+              color: _currentPage > 1 ? colors.foreground : colors.accents4,
+            ),
           ),
         ),
 
@@ -183,10 +185,12 @@ class _CuPaginationState extends State<CuPagination> with CuComponentMixin {
         _PaginationButton(
           onTap: _currentPage < widget.count ? () => _setPage(_currentPage + 1) : null,
           size: itemSize,
-          child: Icon(
-            Icons.chevron_right,
-            size: fontSize + 4,
-            color: _currentPage < widget.count ? colors.foreground : colors.accents4,
+          child: Text(
+            '\u{203A}',
+            style: TextStyle(
+              fontSize: fontSize + 4,
+              color: _currentPage < widget.count ? colors.foreground : colors.accents4,
+            ),
           ),
         ),
       ],
@@ -262,7 +266,7 @@ class _CuPaginationPreviousState extends State<CuPaginationPrevious> with CuComp
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: widget.onTap,
-      child: widget.child ?? const Icon(Icons.chevron_left),
+      child: widget.child ?? const Text('\u{2039}', style: TextStyle(fontSize: 18)),
     );
   }
 }
@@ -283,7 +287,7 @@ class _CuPaginationNextState extends State<CuPaginationNext> with CuComponentMix
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: widget.onTap,
-      child: widget.child ?? const Icon(Icons.chevron_right),
+      child: widget.child ?? const Text('\u{203A}', style: TextStyle(fontSize: 18)),
     );
   }
 }

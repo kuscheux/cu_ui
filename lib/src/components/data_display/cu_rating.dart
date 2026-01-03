@@ -32,8 +32,11 @@ class CuRating extends StatefulWidget {
   /// Size variant
   final CuSize size;
 
-  /// Custom icon
-  final IconData? icon;
+  /// Custom symbol (unicode character)
+  final String? symbol;
+
+  /// Custom filled symbol (unicode character)
+  final String? filledSymbol;
 
   const CuRating({
     super.key,
@@ -43,7 +46,8 @@ class CuRating extends StatefulWidget {
     this.type = CuRatingType.default_,
     this.locked = false,
     this.size = CuSize.medium,
-    this.icon,
+    this.symbol,
+    this.filledSymbol,
   });
 
   @override
@@ -117,18 +121,24 @@ class _CuRatingState extends State<CuRating> with CuComponentMixin {
               padding: EdgeInsets.symmetric(horizontal: spacing.space1 / 2),
               child: Stack(
                 children: [
-                  Icon(
-                    widget.icon ?? Icons.star_outline,
-                    size: _iconSize,
-                    color: colors.accents4,
+                  Text(
+                    widget.symbol ?? '\u{2606}',
+                    style: TextStyle(
+                      fontSize: _iconSize,
+                      color: colors.accents4,
+                      height: 1.0,
+                    ),
                   ),
                   if (isFilled || isPartial)
                     ClipRect(
                       clipper: _PartialClipper(isPartial ? partialValue : 1.0),
-                      child: Icon(
-                        widget.icon ?? Icons.star,
-                        size: _iconSize,
-                        color: _color,
+                      child: Text(
+                        widget.filledSymbol ?? '\u{2605}',
+                        style: TextStyle(
+                          fontSize: _iconSize,
+                          color: _color,
+                          height: 1.0,
+                        ),
                       ),
                     ),
                 ],

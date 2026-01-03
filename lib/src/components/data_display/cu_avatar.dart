@@ -3,17 +3,30 @@ import 'package:flutter/painting.dart';
 import '../../theme/cu_theme.dart';
 import '../_base/cu_component.dart';
 
+/// Avatar size variants
+enum CuAvatarSize {
+  small,
+  medium,
+  large,
+}
+
 /// CU UI Avatar Component
 /// Matches Geist UI Avatar - user profile image/initials
 class CuAvatar extends StatefulWidget {
   /// Image source URL
   final String? src;
 
+  /// Image provider (alternative to src)
+  final ImageProvider? image;
+
   /// Fallback text (typically initials)
   final String? text;
 
-  /// Size in pixels
-  final double size;
+  /// Size in pixels (used when size enum not specified)
+  final double? customSize;
+
+  /// Size variant
+  final CuAvatarSize size;
 
   /// Square avatar (no border radius)
   final bool isSquare;
@@ -24,8 +37,10 @@ class CuAvatar extends StatefulWidget {
   const CuAvatar({
     super.key,
     this.src,
+    this.image,
     this.text,
-    this.size = 40,
+    this.customSize,
+    this.size = CuAvatarSize.medium,
     this.isSquare = false,
     this.stacked = false,
   });
@@ -34,14 +49,16 @@ class CuAvatar extends StatefulWidget {
   factory CuAvatar.small({
     Key? key,
     String? src,
+    ImageProvider? image,
     String? text,
     bool isSquare = false,
   }) {
     return CuAvatar(
       key: key,
       src: src,
+      image: image,
       text: text,
-      size: 28,
+      size: CuAvatarSize.small,
       isSquare: isSquare,
     );
   }
@@ -50,14 +67,16 @@ class CuAvatar extends StatefulWidget {
   factory CuAvatar.large({
     Key? key,
     String? src,
+    ImageProvider? image,
     String? text,
     bool isSquare = false,
   }) {
     return CuAvatar(
       key: key,
       src: src,
+      image: image,
       text: text,
-      size: 56,
+      size: CuAvatarSize.large,
       isSquare: isSquare,
     );
   }
@@ -73,15 +92,65 @@ class _CuAvatarState extends State<CuAvatar> with CuComponentMixin {
     return text.substring(0, 2).toUpperCase();
   }
 
+  double get _sizePixels {
+    if (widget.customSize != null) return widget.customSize!;
+    switch (widget.size) {
+      case CuAvatarSize.small:
+        return 28;
+      case CuAvatarSize.medium:
+        return 40;
+      case CuAvatarSize.large:
+        return 56;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final borderRadiusValue = widget.isSquare ? Radius.circular(radius.md) : Radius.circular(widget.size / 2);
-    final showText = widget.src == null;
+    final size = _sizePixels;
+    final borderRadiusValue = widget.isSquare ? Radius.circular(radius.md) : Radius.circular(size / 2);
+    final showText = widget.src == null && widget.image == null;
+
+    Widget? imageWidget;
+    if (widget.image != null) {
+      imageWidget = Image(
+        image: widget.image!,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return Center(
+            child: Text(
+              _safeText(widget.text),
+              style: typography.body.copyWith(
+                fontSize: size * 0.4,
+                fontWeight: typography.weightMedium,
+                color: colors.foreground,
+              ),
+            ),
+          );
+        },
+      );
+    } else if (widget.src != null) {
+      imageWidget = Image.network(
+        widget.src!,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return Center(
+            child: Text(
+              _safeText(widget.text),
+              style: typography.body.copyWith(
+                fontSize: size * 0.4,
+                fontWeight: typography.weightMedium,
+                color: colors.foreground,
+              ),
+            ),
+          );
+        },
+      );
+    }
 
     return Container(
-      width: widget.size,
-      height: widget.size,
-      margin: widget.stacked ? EdgeInsets.only(left: -widget.size * 0.25) : null,
+      width: size,
+      height: size,
+      margin: widget.stacked ? EdgeInsets.only(left: -size * 0.25) : null,
       decoration: BoxDecoration(
         color: colors.background,
         borderRadius: BorderRadius.all(borderRadiusValue),
@@ -93,28 +162,13 @@ class _CuAvatarState extends State<CuAvatar> with CuComponentMixin {
               child: Text(
                 _safeText(widget.text),
                 style: typography.body.copyWith(
-                  fontSize: widget.size * 0.4,
+                  fontSize: size * 0.4,
                   fontWeight: typography.weightMedium,
                   color: colors.foreground,
                 ),
               ),
             )
-          : Image.network(
-              widget.src!,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Center(
-                  child: Text(
-                    _safeText(widget.text),
-                    style: typography.body.copyWith(
-                      fontSize: widget.size * 0.4,
-                      fontWeight: typography.weightMedium,
-                      color: colors.foreground,
-                    ),
-                  ),
-                );
-              },
-            ),
+          : imageWidget,
     );
   }
 }

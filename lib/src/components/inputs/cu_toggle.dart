@@ -31,19 +31,31 @@ class _CuToggleState extends State<CuToggle> with CuComponentMixin, SingleTicker
   late AnimationController _controller;
   late Animation<double> _animation;
   bool _isHovered = false;
+  bool _initialized = false;
 
   @override
   void initState() {
     super.initState();
+    // Use constant duration in initState since theme is not yet available
     _controller = AnimationController(
-      duration: animation.fast,
+      duration: const Duration(milliseconds: 150),
       vsync: this,
       value: widget.value ? 1.0 : 0.0,
     );
     _animation = CurvedAnimation(
       parent: _controller,
-      curve: animation.ease,
+      curve: Curves.easeInOut,
     );
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_initialized) {
+      // Update with actual theme values now that context is available
+      _controller.duration = animation.fast;
+      _initialized = true;
+    }
   }
 
   @override
@@ -86,6 +98,7 @@ class _CuToggleState extends State<CuToggle> with CuComponentMixin, SingleTicker
               AnimatedBuilder(
                 animation: _animation,
                 builder: (context, child) {
+                  final padding = (_trackHeight - _thumbSize) / 2;
                   return Container(
                     width: _trackWidth,
                     height: _trackHeight,
@@ -102,25 +115,27 @@ class _CuToggleState extends State<CuToggle> with CuComponentMixin, SingleTicker
                         width: borders.width,
                       ),
                     ),
-                    child: Stack(
-                      children: [
-                        Positioned(
-                          left: Tween<double>(
-                            begin: 2.0,
-                            end: _trackWidth - _thumbSize - 2,
-                          ).evaluate(_animation),
-                          top: (_trackHeight - _thumbSize) / 2,
-                          child: Container(
-                            width: _thumbSize,
-                            height: _thumbSize,
-                            decoration: BoxDecoration(
-                              color: colors.background,
-                              shape: BoxShape.circle,
-                              boxShadow: [shadows.small],
+                    padding: EdgeInsets.all(padding),
+                    child: Align(
+                      alignment: AlignmentTween(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                      ).evaluate(_animation)!,
+                      child: Container(
+                        width: _thumbSize,
+                        height: _thumbSize,
+                        decoration: BoxDecoration(
+                          color: colors.background,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0x00000000).withValues(alpha: 0.1),
+                              blurRadius: 2,
+                              offset: const Offset(0, 1),
                             ),
-                          ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
                   );
                 },
