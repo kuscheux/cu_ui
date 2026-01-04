@@ -15,7 +15,8 @@ enum ComponentCategory {
   navigation('Navigation'),
   typography('Typography'),
   dataDisplay('Data Display'),
-  feedback('Feedback');
+  feedback('Feedback'),
+  screens('Screens');
 
   final String label;
   const ComponentCategory(this.label);
@@ -167,7 +168,7 @@ class _ShowcaseScreenState extends State<ShowcaseScreen> {
             style: TextStyle(
               fontFamily: 'Cyrovoid',
               fontSize: 24,
-              letterSpacing: 8,
+              letterSpacing: 2,
               color: Color(0xFFFFFFFF),
             ),
           ),
@@ -296,6 +297,7 @@ class _ShowcaseScreenState extends State<ShowcaseScreen> {
   Widget _buildPreviewArea(CuThemeData theme) {
     final previewContent = _showDeviceFrame
         ? DeviceFrame(
+            key: ValueKey('$_selectedComponent-$_isDarkTheme'),
             child: CuTheme(
               theme: theme,
               child: _buildComponentPreview(),
@@ -395,12 +397,16 @@ const Map<ComponentCategory, List<String>> componentsByCategory = {
     'CuBreadcrumbs',
     'CuPagination',
     'CuLink',
+    'CuBottomNav',
+    'CuAppBar',
+    'CuAdaptiveNav',
   ],
   ComponentCategory.typography: [
     'CuText',
     'CuCode',
     'CuSnippet',
     'CuKeyboard',
+    'CuShimmerText',
   ],
   ComponentCategory.dataDisplay: [
     'CuAvatar',
@@ -414,6 +420,7 @@ const Map<ComponentCategory, List<String>> componentsByCategory = {
     'CuDisplay',
     'CuImage',
     'CuRating',
+    'CuListTile',
   ],
   ComponentCategory.feedback: [
     'CuSpinner',
@@ -421,5 +428,15 @@ const Map<ComponentCategory, List<String>> componentsByCategory = {
     'CuProgress',
     'CuNote',
     'CuToast',
+    'CuShimmer',
+    'CuSkeleton',
+  ],
+  ComponentCategory.screens: [
+    'CuLoadingScreen',
+    'CuLoginScreen',
+    'CuDashboardScreen',
+    'CuTransferScreen',
+    'CuSettingsScreen',
+    'CuAccountDetailScreen',
   ],
 };

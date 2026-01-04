@@ -67,11 +67,9 @@ class CuInput extends StatefulWidget {
   State<CuInput> createState() => _CuInputState();
 }
 
-class _CuInputState extends State<CuInput> with CuComponentMixin, SingleTickerProviderStateMixin {
+class _CuInputState extends State<CuInput> with CuComponentMixin {
   late TextEditingController _controller;
   late FocusNode _focusNode;
-  late AnimationController _animationController;
-  late Animation<double> _focusAnimation;
   bool _isFocused = false;
   bool _isHovered = false;
   bool _obscureText = true;
@@ -83,21 +81,10 @@ class _CuInputState extends State<CuInput> with CuComponentMixin, SingleTickerPr
     _focusNode = widget.focusNode ?? FocusNode();
     _focusNode.addListener(_onFocusChange);
     _controller.addListener(_onTextChange);
-
-    // Animation controller for focus state
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 200),
-      vsync: this,
-    );
-    _focusAnimation = CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeOut,
-    );
   }
 
   @override
   void dispose() {
-    _animationController.dispose();
     _controller.removeListener(_onTextChange);
     if (widget.controller == null) _controller.dispose();
     if (widget.focusNode == null) {
@@ -109,11 +96,6 @@ class _CuInputState extends State<CuInput> with CuComponentMixin, SingleTickerPr
 
   void _onFocusChange() {
     setState(() => _isFocused = _focusNode.hasFocus);
-    if (_isFocused) {
-      _animationController.forward();
-    } else {
-      _animationController.reverse();
-    }
   }
 
   void _onTextChange() {
@@ -169,35 +151,26 @@ class _CuInputState extends State<CuInput> with CuComponentMixin, SingleTickerPr
           onExit: (_) => setState(() => _isHovered = false),
           child: GestureDetector(
             onTap: widget.disabled ? null : () => _focusNode.requestFocus(),
-            child: AnimatedBuilder(
-              animation: _focusAnimation,
-              builder: (context, child) {
-                final borderWidth = Tween<double>(
-                  begin: borders.width,
-                  end: borders.width * 1.5,
-                ).evaluate(_focusAnimation);
-
-                return Container(
-                  decoration: BoxDecoration(
-                    color: widget.disabled ? colors.accents1 : colors.background,
-                    border: Border.all(
-                      color: _borderColor(hasError),
-                      width: borderWidth,
-                    ),
-                    borderRadius: radius.mdBorder,
-                    boxShadow: _isFocused && !hasError
-                        ? [
-                            BoxShadow(
-                              color: colors.foreground.withValues(alpha: 0.1 * _focusAnimation.value),
-                              blurRadius: 4 * _focusAnimation.value,
-                              spreadRadius: 0,
-                            ),
-                          ]
-                        : null,
-                  ),
-                  child: child,
-                );
-              },
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 150),
+              curve: Curves.easeOut,
+              decoration: BoxDecoration(
+                color: widget.disabled ? colors.accents1 : colors.background,
+                border: Border.all(
+                  color: _borderColor(hasError),
+                  width: borders.width,
+                ),
+                borderRadius: radius.mdBorder,
+                boxShadow: _isFocused && !hasError
+                    ? [
+                        BoxShadow(
+                          color: colors.foreground.withValues(alpha: 0.1),
+                          blurRadius: 4,
+                          spreadRadius: 0,
+                        ),
+                      ]
+                    : null,
+              ),
               child: Row(
                 children: [
                   // Prefix / Icon

@@ -11,3 +11,5 @@ export 'shadow_tokens.dart';
 export 'animation_tokens.dart';
 export 'breakpoint_tokens.dart';
 export 'border_tokens.dart';
+export 'density_tokens.dart';
+export 'locale_tokens.dart';

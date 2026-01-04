@@ -33,8 +33,8 @@ class _SplashScreenState extends State<SplashScreen>
       ),
     );
 
-    // Letter spacing animation from 30-60%
-    _letterSpacing = Tween<double>(begin: 8.0, end: 16.0).animate(
+    // Tiny letter spacing
+    _letterSpacing = Tween<double>(begin: 2.0, end: 2.0).animate(
       CurvedAnimation(
         parent: _controller,
         curve: const Interval(0.3, 0.6, curve: Curves.easeInOut),

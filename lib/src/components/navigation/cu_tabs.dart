@@ -1,6 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter/painting.dart';
 import '../../theme/cu_theme.dart';
+import '../../services/cu_haptics.dart';
+import '../../services/cu_sounds.dart';
 import '../_base/cu_component.dart';
 
 /// CU UI Tabs Component
@@ -69,6 +71,8 @@ class _CuTabsState extends State<CuTabs> with CuComponentMixin {
   }
 
   void _handleTabTap(String value) {
+    if (theme.hapticsEnabled) CuHaptics.light();
+    if (theme.soundsEnabled) CuSounds.selection();
     if (widget.value == null) {
       setState(() => _selectedValue = value);
     }

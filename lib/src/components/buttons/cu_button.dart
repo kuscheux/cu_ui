@@ -1,6 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter/painting.dart';
 import '../../theme/cu_theme.dart';
+import '../../services/cu_haptics.dart';
+import '../../services/cu_sounds.dart';
 import '../_base/cu_component.dart';
 import '../feedback/cu_spinner.dart';
 import '../feedback/cu_splash.dart';
@@ -31,6 +33,7 @@ class CuButton extends StatefulWidget {
   final bool auto; // Auto-width
   final bool ghost; // Transparent background
   final bool shadow; // Show shadow
+  final bool haptics; // Enable haptic feedback
   final Widget? icon;
   final Widget? iconRight;
 
@@ -45,6 +48,7 @@ class CuButton extends StatefulWidget {
     this.auto = false,
     this.ghost = false,
     this.shadow = false,
+    this.haptics = true,
     this.icon,
     this.iconRight,
   });
@@ -81,6 +85,7 @@ class CuButton extends StatefulWidget {
     CuSize size = CuSize.medium,
     bool loading = false,
     bool disabled = false,
+    bool auto = false,
     Widget? icon,
     Widget? iconRight,
   }) {
@@ -91,6 +96,7 @@ class CuButton extends StatefulWidget {
       size: size,
       loading: loading,
       disabled: disabled,
+      auto: auto,
       icon: icon,
       iconRight: iconRight,
       child: child,
@@ -105,6 +111,7 @@ class CuButton extends StatefulWidget {
     CuSize size = CuSize.medium,
     bool loading = false,
     bool disabled = false,
+    bool auto = false,
   }) {
     return CuButton(
       key: key,
@@ -113,6 +120,7 @@ class CuButton extends StatefulWidget {
       size: size,
       loading: loading,
       disabled: disabled,
+      auto: auto,
       child: child,
     );
   }
@@ -125,6 +133,7 @@ class CuButton extends StatefulWidget {
     CuSize size = CuSize.medium,
     bool loading = false,
     bool disabled = false,
+    bool auto = false,
   }) {
     return CuButton(
       key: key,
@@ -133,6 +142,7 @@ class CuButton extends StatefulWidget {
       size: size,
       loading: loading,
       disabled: disabled,
+      auto: auto,
       child: child,
     );
   }
@@ -145,6 +155,7 @@ class CuButton extends StatefulWidget {
     CuSize size = CuSize.medium,
     bool loading = false,
     bool disabled = false,
+    bool auto = false,
   }) {
     return CuButton(
       key: key,
@@ -153,6 +164,7 @@ class CuButton extends StatefulWidget {
       size: size,
       loading: loading,
       disabled: disabled,
+      auto: auto,
       child: child,
     );
   }
@@ -166,6 +178,16 @@ class _CuButtonState extends State<CuButton> with CuComponentMixin {
   bool _isPressed = false;
 
   bool get _isDisabled => widget.disabled || widget.loading;
+
+  void _handleTap() {
+    if (widget.haptics && theme.hapticsEnabled) {
+      CuHaptics.light();
+    }
+    if (theme.soundsEnabled) {
+      CuSounds.tap();
+    }
+    widget.onPressed?.call();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -192,52 +214,52 @@ class _CuButtonState extends State<CuButton> with CuComponentMixin {
             color: _borderColor,
             width: borders.width,
           ),
-          borderRadius: radius.mdBorder,
+          borderRadius: BorderRadius.circular(999), // Pill shape
           boxShadow: widget.shadow && !_isDisabled ? shadows.smallList : null,
         ),
         child: CuSplash(
-          onTap: _isDisabled ? null : widget.onPressed,
+          onTap: _isDisabled ? null : _handleTap,
           disabled: _isDisabled,
-          borderRadius: radius.mdBorder,
+          borderRadius: BorderRadius.circular(999), // Pill shape
           splashColor: _textColor.withValues(alpha: 0.1),
           hoverColor: const Color(0x00000000),
           showHover: false,
           child: Padding(
             padding: _padding,
-            child: Center(
-              child: Row(
-                mainAxisSize: widget.auto ? MainAxisSize.min : MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  if (widget.loading)
-                    Padding(
-                      padding: EdgeInsets.only(right: spacing.space2),
-                      child: CuSpinner(size: _iconSize, color: _textColor),
-                    )
-                  else if (widget.icon != null)
-                    Padding(
-                      padding: EdgeInsets.only(right: spacing.space2),
-                      child: DefaultTextStyle(
-                        style: TextStyle(fontSize: _iconSize, color: _textColor),
-                        child: widget.icon!,
-                      ),
+            child: Row(
+              mainAxisSize: widget.auto ? MainAxisSize.min : MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                if (widget.loading)
+                  Padding(
+                    padding: EdgeInsets.only(right: spacing.space2),
+                    child: CuSpinner(size: _iconSize, color: _textColor),
+                  )
+                else if (widget.icon != null)
+                  Padding(
+                    padding: EdgeInsets.only(right: spacing.space2),
+                    child: DefaultTextStyle(
+                      style: TextStyle(fontSize: _iconSize, color: _textColor),
+                      child: widget.icon!,
                     ),
-                  DefaultTextStyle(
+                  ),
+                Flexible(
+                  child: DefaultTextStyle(
                     style: _textStyle,
                     textAlign: TextAlign.center,
                     child: widget.child,
                   ),
-                  if (widget.iconRight != null)
-                    Padding(
-                      padding: EdgeInsets.only(left: spacing.space2),
-                      child: DefaultTextStyle(
-                        style: TextStyle(fontSize: _iconSize, color: _textColor),
-                        child: widget.iconRight!,
-                      ),
+                ),
+                if (widget.iconRight != null)
+                  Padding(
+                    padding: EdgeInsets.only(left: spacing.space2),
+                    child: DefaultTextStyle(
+                      style: TextStyle(fontSize: _iconSize, color: _textColor),
+                      child: widget.iconRight!,
                     ),
-                ],
-              ),
+                  ),
+              ],
             ),
           ),
         ),

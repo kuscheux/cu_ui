@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
-import 'package:flutter/painting.dart';
 import '../../theme/cu_theme.dart';
 import '../_base/cu_component.dart';
+import '../surfaces/cu_bottom_sheet.dart';
 
 /// Select option
 class CuSelectOption<T> {
@@ -11,18 +11,26 @@ class CuSelectOption<T> {
   /// Display label
   final String label;
 
+  /// Subtitle/description
+  final String? subtitle;
+
+  /// Leading icon widget
+  final Widget? icon;
+
   /// Whether option is disabled
   final bool disabled;
 
   const CuSelectOption({
     required this.value,
     required this.label,
+    this.subtitle,
+    this.icon,
     this.disabled = false,
   });
 }
 
 /// CU UI Select Component
-/// Matches Geist UI Select - dropdown selection
+/// Uses bottom sheet for selection on mobile
 class CuSelect<T> extends StatefulWidget {
   /// Select options
   final List<CuSelectOption<T>> options;
@@ -39,6 +47,9 @@ class CuSelect<T> extends StatefulWidget {
   /// Label text
   final String? label;
 
+  /// Bottom sheet title
+  final String? sheetTitle;
+
   /// Size variant
   final CuSize size;
 
@@ -47,6 +58,9 @@ class CuSelect<T> extends StatefulWidget {
 
   /// Error state
   final bool error;
+
+  /// Error message
+  final String? errorMessage;
 
   /// Width
   final double? width;
@@ -61,9 +75,11 @@ class CuSelect<T> extends StatefulWidget {
     this.onChange,
     this.placeholder,
     this.label,
+    this.sheetTitle,
     this.size = CuSize.medium,
     this.disabled = false,
     this.error = false,
+    this.errorMessage,
     this.width,
     this.multiple = false,
   });
@@ -73,9 +89,7 @@ class CuSelect<T> extends StatefulWidget {
 }
 
 class _CuSelectState<T> extends State<CuSelect<T>> with CuComponentMixin {
-  final LayerLink _layerLink = LayerLink();
-  OverlayEntry? _overlayEntry;
-  bool _isOpen = false;
+  bool _isFocused = false;
 
   CuSelectOption<T>? get _selectedOption {
     if (widget.value == null) return null;
@@ -85,61 +99,28 @@ class _CuSelectState<T> extends State<CuSelect<T>> with CuComponentMixin {
         );
   }
 
-  void _toggleDropdown() {
+  Future<void> _openSelection() async {
     if (widget.disabled) return;
-    if (_isOpen) {
-      _closeDropdown();
-    } else {
-      _openDropdown();
-    }
-  }
 
-  void _openDropdown() {
-    _overlayEntry = OverlayEntry(
-      builder: (context) => GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        onTap: _closeDropdown,
-        child: Stack(
-          children: [
-            CompositedTransformFollower(
-              link: _layerLink,
-              offset: const Offset(0, 4),
-              targetAnchor: Alignment.bottomLeft,
-              followerAnchor: Alignment.topLeft,
-              child: GestureDetector(
-                onTap: () {},
-                child: _SelectDropdown<T>(
-                  options: widget.options,
-                  value: widget.value,
-                  onSelect: (value) {
-                    widget.onChange?.call(value);
-                    _closeDropdown();
-                  },
-                  width: widget.width,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+    setState(() => _isFocused = true);
+
+    final result = await CuBottomSheet.showSelection<T>(
+      context: context,
+      title: widget.sheetTitle ?? widget.label ?? 'Select',
+      selectedValue: widget.value,
+      options: widget.options.map((opt) => CuBottomSheetOption<T>(
+        value: opt.value,
+        label: opt.label,
+        subtitle: opt.subtitle,
+        icon: opt.icon,
+      )).toList(),
     );
 
-    Overlay.of(context).insert(_overlayEntry!);
-    setState(() => _isOpen = true);
-  }
+    setState(() => _isFocused = false);
 
-  void _closeDropdown() {
-    _overlayEntry?.remove();
-    _overlayEntry = null;
-    if (mounted) {
-      setState(() => _isOpen = false);
+    if (result != null) {
+      widget.onChange?.call(result);
     }
-  }
-
-  @override
-  void dispose() {
-    _closeDropdown();
-    super.dispose();
   }
 
   EdgeInsets get _padding {
@@ -159,161 +140,78 @@ class _CuSelectState<T> extends State<CuSelect<T>> with CuComponentMixin {
         if (widget.label != null) ...[
           Text(
             widget.label!,
-            style: typography.bodySmall.copyWith(fontWeight: typography.weightMedium),
+            style: typography.label.copyWith(
+              color: colors.accents5,
+              fontWeight: typography.weightMedium,
+            ),
           ),
           SizedBox(height: spacing.space2),
         ],
-        CompositedTransformTarget(
-          link: _layerLink,
-          child: MouseRegion(
-            cursor: widget.disabled
-                ? SystemMouseCursors.forbidden
-                : SystemMouseCursors.click,
-            child: GestureDetector(
-              onTap: _toggleDropdown,
-              child: Container(
-                width: widget.width,
-                padding: _padding,
-                decoration: BoxDecoration(
-                  color: widget.disabled ? colors.accents1 : colors.background,
-                  border: Border.all(
-                    color: widget.error
-                        ? colors.error.base
-                        : _isOpen
-                            ? colors.foreground
-                            : colors.border,
-                  ),
-                  borderRadius: radius.mdBorder,
-                ),
-                child: Row(
-                  mainAxisSize: widget.width == null ? MainAxisSize.min : MainAxisSize.max,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        _selectedOption?.label ?? widget.placeholder ?? 'Select...',
-                        style: typography.body.copyWith(
-                          color: _selectedOption == null
-                              ? colors.accents4
-                              : widget.disabled
-                                  ? colors.accents4
-                                  : colors.foreground,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    SizedBox(width: spacing.space2),
-                    AnimatedRotation(
-                      duration: animation.fast,
-                      turns: _isOpen ? 0.5 : 0,
-                      child: Text(
-                        '\u{25BC}',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: colors.accents5,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+
+        GestureDetector(
+          onTap: _openSelection,
+          child: Container(
+            width: widget.width,
+            padding: _padding,
+            decoration: BoxDecoration(
+              color: widget.disabled ? colors.accents1 : colors.background,
+              border: Border.all(
+                color: widget.error
+                    ? colors.error.base
+                    : _isFocused
+                        ? colors.foreground
+                        : colors.border,
+                width: _isFocused ? 2 : 1,
               ),
+              borderRadius: radius.mdBorder,
             ),
-          ),
-        ),
-      ],
-    );
-  }
-}
+            child: Row(
+              children: [
+                // Selected option icon
+                if (_selectedOption?.icon != null) ...[
+                  _selectedOption!.icon!,
+                  SizedBox(width: spacing.space2),
+                ],
 
-class _SelectDropdown<T> extends StatefulWidget {
-  final List<CuSelectOption<T>> options;
-  final T? value;
-  final ValueChanged<T> onSelect;
-  final double? width;
-
-  const _SelectDropdown({
-    required this.options,
-    required this.value,
-    required this.onSelect,
-    this.width,
-  });
-
-  @override
-  State<_SelectDropdown<T>> createState() => _SelectDropdownState<T>();
-}
-
-class _SelectDropdownState<T> extends State<_SelectDropdown<T>> with CuComponentMixin {
-  int? _hoveredIndex;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        width: widget.width ?? 200,
-        constraints: const BoxConstraints(maxHeight: 300),
-        decoration: BoxDecoration(
-          color: colors.background,
-          border: Border.all(color: colors.border),
-          borderRadius: radius.mdBorder,
-          boxShadow: shadows.dropdownList,
-        ),
-        child: ClipRRect(
-          borderRadius: radius.mdBorder,
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              mainAxisSize: MainAxisSize.min,
-              children: widget.options.asMap().entries.map((entry) {
-                final index = entry.key;
-                final option = entry.value;
-                final isSelected = option.value == widget.value;
-                final isHovered = _hoveredIndex == index;
-
-                return MouseRegion(
-                  onEnter: (_) => setState(() => _hoveredIndex = index),
-                  onExit: (_) => setState(() => _hoveredIndex = null),
-                  cursor: option.disabled
-                      ? SystemMouseCursors.forbidden
-                      : SystemMouseCursors.click,
-                  child: GestureDetector(
-                    onTap: option.disabled ? null : () => widget.onSelect(option.value),
-                    child: Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: spacing.space4,
-                        vertical: spacing.space3,
-                      ),
-                      color: isSelected
-                          ? colors.accents2
-                          : isHovered
-                              ? colors.accents1
-                              : colors.background,
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              option.label,
-                              style: typography.body.copyWith(
-                                color: option.disabled
-                                    ? colors.accents4
-                                    : colors.foreground,
-                              ),
-                            ),
-                          ),
-                          if (isSelected)
-                            Text(
-                              '\u{2713}',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: colors.foreground,
-                              ),
-                            ),
-                        ],
-                      ),
+                // Selected value or placeholder
+                Expanded(
+                  child: Text(
+                    _selectedOption?.label ?? widget.placeholder ?? 'Select...',
+                    style: typography.body.copyWith(
+                      color: _selectedOption == null
+                          ? colors.accents4
+                          : widget.disabled
+                              ? colors.accents4
+                              : colors.foreground,
                     ),
+                    overflow: TextOverflow.ellipsis,
                   ),
-                );
-              }).toList(),
+                ),
+
+                SizedBox(width: spacing.space2),
+
+                // Chevron
+                Text(
+                  '\u{25BC}',
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: colors.accents4,
+                  ),
+                ),
+              ],
             ),
           ),
         ),
+
+        // Error message
+        if (widget.error && widget.errorMessage != null) ...[
+          SizedBox(height: spacing.space1),
+          Text(
+            widget.errorMessage!,
+            style: typography.caption.copyWith(color: colors.error.base),
+          ),
+        ],
+      ],
     );
   }
 }

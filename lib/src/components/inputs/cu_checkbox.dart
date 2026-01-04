@@ -1,6 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter/painting.dart';
 import '../../theme/cu_theme.dart';
+import '../../services/cu_haptics.dart';
+import '../../services/cu_sounds.dart';
 import '../_base/cu_component.dart';
 
 /// CU UI Checkbox Component
@@ -34,6 +36,8 @@ class _CuCheckboxState extends State<CuCheckbox> with CuComponentMixin {
 
   void _handleTap() {
     if (!widget.disabled && widget.onChanged != null) {
+      if (theme.hapticsEnabled) CuHaptics.light();
+      if (theme.soundsEnabled) CuSounds.toggle();
       widget.onChanged!(!widget.value);
     }
   }

@@ -16,6 +16,10 @@ export 'src/theme/presets/dark_theme.dart';
 // Tokens
 export 'src/tokens/cu_tokens.dart';
 
+// Services
+export 'src/services/cu_haptics.dart';
+export 'src/services/cu_sounds.dart';
+
 // Base
 export 'src/components/_base/cu_component.dart';
 
@@ -41,6 +45,9 @@ export 'src/components/layout/cu_spacer.dart';
 export 'src/components/layout/cu_page.dart';
 export 'src/components/layout/cu_divider.dart';
 export 'src/components/layout/cu_fieldset.dart';
+export 'src/components/layout/cu_safe_area.dart';
+export 'src/components/layout/cu_scaffold.dart';
+export 'src/components/layout/cu_preview_frame.dart';
 
 // Components - Surfaces
 export 'src/components/surfaces/cu_card.dart';
@@ -49,12 +56,16 @@ export 'src/components/surfaces/cu_drawer.dart';
 export 'src/components/surfaces/cu_popover.dart';
 export 'src/components/surfaces/cu_tooltip.dart';
 export 'src/components/surfaces/cu_collapse.dart';
+export 'src/components/surfaces/cu_bottom_sheet.dart';
 
 // Components - Navigation
 export 'src/components/navigation/cu_tabs.dart';
 export 'src/components/navigation/cu_breadcrumbs.dart';
 export 'src/components/navigation/cu_pagination.dart';
 export 'src/components/navigation/cu_link.dart';
+export 'src/components/navigation/cu_bottom_nav.dart';
+export 'src/components/navigation/cu_app_bar.dart';
+export 'src/components/navigation/cu_adaptive_nav.dart';
 
 // Components - Typography
 export 'src/components/typography/cu_text.dart';
@@ -73,6 +84,7 @@ export 'src/components/data_display/cu_dot.dart';
 export 'src/components/data_display/cu_description.dart';
 export 'src/components/data_display/cu_display.dart';
 export 'src/components/data_display/cu_image.dart';
+export 'src/components/data_display/cu_list_tile.dart';
 
 // Components - Feedback
 export 'src/components/feedback/cu_loading.dart';

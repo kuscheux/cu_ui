@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:cu_ui/cu_ui.dart';
 
 /// Device frame with realistic mobile bezels
 class DeviceFrame extends StatelessWidget {
@@ -13,6 +14,16 @@ class DeviceFrame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Use CuPreviewFrame for Navigator/Overlay support
+    final contentWithNavigator = CuPreviewFrame(
+      mediaQueryData: const MediaQueryData(
+        size: Size(375, 812),
+        padding: EdgeInsets.only(top: 44, bottom: 34),
+        viewPadding: EdgeInsets.only(top: 44, bottom: 34),
+      ),
+      child: child,
+    );
+
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFF1A1A1A),
@@ -43,7 +54,7 @@ class DeviceFrame extends StatelessWidget {
               Positioned.fill(
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(40),
-                  child: child,
+                  child: contentWithNavigator,
                 ),
               ),
 

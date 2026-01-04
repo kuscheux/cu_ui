@@ -331,15 +331,15 @@ class _CuDashboardScreenState extends State<CuDashboardScreen> with CuComponentM
   String _getAccountIcon(String type) {
     switch (type.toLowerCase()) {
       case 'checking':
-        return '\u{1F4B3}'; // Credit card
+        return '\u{25A1}'; // Square - checking
       case 'savings':
-        return '\u{1F3E6}'; // Bank
+        return '\u{25C7}'; // Diamond - savings
       case 'credit':
-        return '\u{1F4B0}'; // Money bag
+        return '\u{25CB}'; // Circle - credit
       case 'loan':
-        return '\u{1F4C8}'; // Chart
+        return '\u{25B3}'; // Triangle - loan
       default:
-        return '\u{1F4B5}'; // Dollar
+        return '\u{25C6}'; // Filled diamond - default
     }
   }
 

@@ -1,6 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter/painting.dart';
 import '../../theme/cu_theme.dart';
+import '../../services/cu_haptics.dart';
+import '../../services/cu_sounds.dart';
 import '../_base/cu_component.dart';
 
 /// CU UI Radio Component
@@ -34,6 +36,8 @@ class _CuRadioState<T> extends State<CuRadio<T>> with CuComponentMixin {
 
   void _handleTap() {
     if (!widget.disabled && widget.onChanged != null) {
+      if (theme.hapticsEnabled) CuHaptics.selection();
+      if (theme.soundsEnabled) CuSounds.selection();
       widget.onChanged!(widget.value);
     }
   }
